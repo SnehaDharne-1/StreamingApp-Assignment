@@ -1,4 +1,5 @@
 pipeline {
+
     agent any
 
     environment {
@@ -14,30 +15,45 @@ pipeline {
             }
         }
 
-        stage('Verify Docker') {
+        stage('Build Frontend') {
             steps {
-                sh 'docker --version'
+                sh '''
+                docker build -t streamingapp-frontend ./frontend
+                '''
             }
         }
 
-        stage('Verify AWS CLI') {
+        stage('Build Auth Service') {
             steps {
-                sh 'aws --version'
+                sh '''
+                docker build -t streamingapp-auth ./backend/authService
+                '''
             }
         }
 
-        stage('Verify AWS Login') {
+        stage('Build Streaming Service') {
             steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-ecr'
-                ]]) {
-
-                    sh '''
-                        aws sts get-caller-identity
-                    '''
-                }
+                sh '''
+                docker build -t streamingapp-streaming ./backend/streamingService
+                '''
             }
         }
+
+        stage('Build Admin Service') {
+            steps {
+                sh '''
+                docker build -t streamingapp-admin ./backend/adminService
+                '''
+            }
+        }
+
+        stage('Build Chat Service') {
+            steps {
+                sh '''
+                docker build -t streamingapp-chat ./backend/chatService
+                '''
+            }
+        }
+
     }
 }
