@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat
+  namespace: streamingapp
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: chat
+
+  template:
+    metadata:
+      labels:
+        app: chat
+
+    spec:
+      containers:
+      - name: chat
+
+        image: 672120083021.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-chat:latest
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 3004
+
+        env:
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/streamingapp

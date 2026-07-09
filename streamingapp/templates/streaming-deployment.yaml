@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streaming
+  namespace: streamingapp
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: streaming
+
+  template:
+    metadata:
+      labels:
+        app: streaming
+
+    spec:
+      containers:
+      - name: streaming
+
+        image: 672120083021.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-streaming:latest
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 3002
+
+        env:
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/streamingapp
