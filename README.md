@@ -133,6 +133,400 @@ Automated tests are not yet included. Recommended smoke checks:
 2. Upload a small video + thumbnail via the admin dashboard (requires valid S3 credentials).
 3. Confirm playback from the browse page and verify that chat messages broadcast between multiple browser tabs.
 
+
+# StreamingApp - Kubernetes Deployment on Amazon EKS
+
+## Project Overview
+
+This project demonstrates the deployment of a MERN-based Streaming Application using modern DevOps practices.
+
+The application consists of multiple microservices that are containerized using Docker, stored in Amazon Elastic Container Registry (ECR), and deployed to an Amazon Elastic Kubernetes Service (EKS) cluster using Helm Charts.
+
+---
+
+# Project Architecture
+
+```
+GitHub Repository
+        │
+        ▼
+Jenkins Pipeline
+        │
+        ▼
+Docker Build
+        │
+        ▼
+Amazon ECR
+        │
+        ▼
+Amazon EKS Cluster
+        │
+        ▼
+Helm Chart Deployment
+        │
+        ▼
+Kubernetes Pods & Services
+```
+
+---
+
+# Technology Stack
+
+- Frontend : ReactJS
+- Backend : NodeJS + Express
+- Database : MongoDB
+- Containerization : Docker
+- CI/CD : Jenkins
+- Container Registry : Amazon ECR
+- Orchestration : Kubernetes
+- Cluster : Amazon EKS
+- Package Manager : Helm
+- Cloud Platform : AWS
+
+---
+
+# Project Structure
+
+```
+StreamingApp-Assignment
+│
+├── frontend/
+├── backend/
+│   ├── authService/
+│   ├── adminService/
+│   ├── chatService/
+│   └── streamingService/
+│
+├── streamingapp/
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   └── templates/
+│       ├── namespace.yaml
+│       ├── mongo-deployment.yaml
+│       ├── mongo-service.yaml
+│       ├── frontend-deployment.yaml
+│       ├── frontend-service.yaml
+│       ├── auth-deployment.yaml
+│       ├── auth-service.yaml
+│       ├── admin-deployment.yaml
+│       ├── admin-service.yaml
+│       ├── streaming-deployment.yaml
+│       ├── streaming-service.yaml
+│       ├── chat-deployment.yaml
+│       └── chat-service.yaml
+│
+├── Jenkinsfile
+└── README.md
+```
+
+---
+
+# Jenkins Pipeline Stages
+
+The Jenkins pipeline automates the following tasks:
+
+- Checkout Source Code
+- Login to Amazon ECR
+- Build Frontend Docker Image
+- Build Auth Service Docker Image
+- Build Streaming Service Docker Image
+- Build Admin Service Docker Image
+- Build Chat Service Docker Image
+- Tag Docker Images
+- Push Images to Amazon ECR
+
+Pipeline Execution:
+
+```
+Checkout SCM
+      ↓
+Login to Amazon ECR
+      ↓
+Build Docker Images
+      ↓
+Tag Images
+      ↓
+Push Images to ECR
+```
+
+---
+
+# Amazon ECR Repositories
+
+The following repositories were created:
+
+- streamingapp-frontend
+- streamingapp-auth
+- streamingapp-admin
+- streamingapp-chat
+- streamingapp-streaming
+
+---
+
+# Amazon EKS Cluster
+
+Cluster Name
+
+```
+streamingapp-cluster
+```
+
+Node Group
+
+```
+streamingapp-nodes
+```
+
+Node Type
+
+```
+t3.medium
+```
+
+Number of Nodes
+
+```
+2
+```
+
+Region
+
+```
+ap-south-1
+```
+
+---
+
+# Kubernetes Resources
+
+The following resources are deployed:
+
+### Deployments
+
+- frontend
+- auth
+- admin
+- streaming
+- chat
+- mongo
+
+### Services
+
+- frontend (LoadBalancer)
+- auth (ClusterIP)
+- admin (ClusterIP)
+- streaming (ClusterIP)
+- chat (ClusterIP)
+- mongo (ClusterIP)
+
+---
+
+# MongoDB Configuration
+
+MongoDB runs as an internal Kubernetes Deployment.
+
+Applications connect using:
+
+```
+mongodb://mongo:27017/streamingapp
+```
+
+instead of
+
+```
+mongodb://localhost:27017/streamingapp
+```
+
+This change resolved the CrashLoopBackOff issue encountered during deployment.
+
+---
+
+# Helm Deployment
+
+Create Helm Chart
+
+```bash
+helm create streamingapp
+```
+
+Install Chart
+
+```bash
+helm install streamingapp-release ./streamingapp
+```
+
+Upgrade Chart
+
+```bash
+helm upgrade streamingapp-release ./streamingapp
+```
+
+Check Releases
+
+```bash
+helm list
+```
+
+---
+
+# Kubernetes Commands
+
+View Nodes
+
+```bash
+kubectl get nodes
+```
+
+View Pods
+
+```bash
+kubectl get pods -n streamingapp
+```
+
+View Services
+
+```bash
+kubectl get svc -n streamingapp
+```
+
+View Deployments
+
+```bash
+kubectl get deployment -n streamingapp
+```
+
+View All Resources
+
+```bash
+kubectl get all -n streamingapp
+```
+
+View Logs
+
+```bash
+kubectl logs <pod-name> -n streamingapp
+```
+
+---
+
+# Application Deployment Status
+
+All application components are successfully deployed.
+
+| Component | Status |
+|-----------|--------|
+| Frontend | Running |
+| Auth Service | Running |
+| Admin Service | Running |
+| Streaming Service | Running |
+| Chat Service | Running |
+| MongoDB | Running |
+
+---
+
+# Frontend Access
+
+The frontend is exposed using a Kubernetes LoadBalancer.
+
+Example:
+
+```
+http://<LoadBalancer-DNS>
+```
+
+The DNS name can be obtained using:
+
+```bash
+kubectl get svc -n streamingapp
+```
+
+---
+
+# Challenges Faced
+
+### 1. IAM Permission Errors
+
+Issue:
+
+```
+AccessDeniedException
+```
+
+Solution:
+
+Attached AdministratorAccess policy to the IAM user.
+
+---
+
+### 2. CrashLoopBackOff
+
+Issue:
+
+```
+MongoDB Connection Refused
+```
+
+Reason:
+
+Applications were attempting to connect to
+
+```
+localhost:27017
+```
+
+inside Kubernetes Pods.
+
+Solution:
+
+Created MongoDB Deployment and Service.
+
+Updated all services to use
+
+```
+mongodb://mongo:27017/streamingapp
+```
+
+---
+
+### 3. Helm YAML Parsing Error
+
+Issue:
+
+```
+yaml: did not find expected key
+```
+
+Reason:
+
+Incorrect indentation in deployment YAML.
+
+Solution:
+
+Corrected YAML indentation and successfully upgraded the Helm release.
+
+---
+
+# Final Outcome
+
+Successfully completed:
+
+- Docker Containerization
+- Jenkins CI Pipeline
+- Amazon ECR Integration
+- Amazon EKS Cluster Setup
+- Kubernetes Deployments
+- Kubernetes Services
+- MongoDB Deployment
+- Helm Chart Deployment
+- LoadBalancer Configuration
+- End-to-End Microservices Deployment
+
+---
+
+# Author
+
+**Sneha Dharne**
+
 ## License
 
 MIT © StreamFlix Team
