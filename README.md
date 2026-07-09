@@ -429,9 +429,6 @@ All application components are successfully deployed.
 The frontend is exposed using a Kubernetes LoadBalancer.
 
 ```
-<img width="1240" height="684" alt="Screenshot 2026-07-09 204924" src="https://github.com/user-attachments/assets/a025a9e5-0fe6-4057-bfff-0ec9377ecaaf" />
-
-
 ```
 
 The DNS name can be obtained using:
@@ -472,10 +469,6 @@ Applications were attempting to connect to
 
 ```
 localhost:27017
-This image is is build by using the localhost
-<img width="1348" height="673" alt="Screenshot 2026-07-07 005451" src="https://github.com/user-attachments/assets/b262e3e7-692c-4cac-ad8b-3d0cfed0e637" />
-
-
 ```
 
 inside Kubernetes Pods.
